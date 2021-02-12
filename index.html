@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>Nothing to see here</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+
+  <script>
+    fetch('/json/data.json')
+      .then(data => data.json())
+      .then(json => console.log(json))
+  </script>
+</html>
