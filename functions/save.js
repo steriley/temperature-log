@@ -1,33 +1,49 @@
-const fs = require('fs');
-const path = require('path');
+/* eslint-disable no-console */
+// const fs = require('fs');
+// const path = require('path');
+const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
+
+dotenv.config();
 
 exports.handler = async (event) => {
-  const subject = event.queryStringParameters.name || 'World';
+  const {
+    temperature, humidity, pressure, room,
+  } = event.queryStringParameters;
+  const {
+    DB_USER, DB_PASS, DB_URL, DB_NAME,
+  } = process.env;
+  const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_URL}/${DB_NAME}?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, { useUnifiedTopology: true, useNewUrlParser: true });
+  const data = {
+    temperature: parseFloat(temperature),
+    humidity: parseFloat(humidity),
+    pressure: parseFloat(pressure),
+  };
 
-  const data = [];
-  const randomAmount = (x) => Math.floor(Math.random() * x) + 1;
-  const randomDate = (start, end) =>
-    new Date(
-      start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+  console.info(uri);
+
+  try {
+    await client.connect();
+
+    const database = client.db(process.env.DB_NAME);
+    const collection = database.collection(room || 'boxroom');
+    const result = await collection.insertOne(data);
+
+    // fs.writeFileSync(path.join(process.cwd(), 'json', 'data.json'), JSON.stringify([data]));
+
+    console.log(
+      `${result.insertedCount} documents were inserted with the _id: ${result.insertedId}`,
     );
-
-  const amountOfData = randomAmount(10);
-
-  for (let i = 0; i < amountOfData; i++) {
-    data.push({
-      temp: randomAmount(100),
-      hum: randomAmount(100),
-      date: randomDate(new Date(2020, 0, 1), new Date()),
-    });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
   }
-
-  fs.writeFileSync(
-    path.join(process.cwd(), 'json', 'data.json'),
-    JSON.stringify(data),
-  );
 
   return {
     statusCode: 200,
-    body: `Hello ${subject}!`,
+    body: JSON.stringify(data, null, 2),
   };
 };
