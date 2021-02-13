@@ -1,9 +1,18 @@
 /* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
-const client = require('..')();
+const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
+
+dotenv.config();
 
 const write = async () => {
+  const {
+    DB_USER, DB_PASS, DB_URL, DB_NAME,
+  } = process.env;
+
+  const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_URL}/${DB_NAME}?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, { useUnifiedTopology: true });
   const DATA_DIR = 'public';
 
   async function writeCollection(db, name) {

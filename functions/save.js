@@ -1,7 +1,16 @@
 /* eslint-disable no-console */
-const client = require('..')();
+const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
+
+dotenv.config();
 
 exports.handler = async (event) => {
+  const {
+    DB_USER, DB_PASS, DB_URL, DB_NAME,
+  } = process.env;
+
+  const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_URL}/${DB_NAME}?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, { useUnifiedTopology: true });
   const {
     temperature, humidity, pressure, room,
   } = event.queryStringParameters;
