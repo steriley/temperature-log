@@ -1,17 +1,28 @@
 module.exports = {
+  root: true,
   env: {
-    browser: true,
-    commonjs: true,
-    es2021: true,
+    node: true,
   },
   extends: [
-    'airbnb-base',
+    'plugin:vue/essential',
+    '@vue/airbnb',
   ],
   parserOptions: {
-    ecmaVersion: 12,
+    parser: 'babel-eslint',
   },
   rules: {
-    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
-    'implicit-arrow-linebreak': 0,
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
+  overrides: [
+    {
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)',
+      ],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

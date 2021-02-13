@@ -7,7 +7,7 @@ const { MongoClient } = require('mongodb');
 dotenv.config();
 
 const write = async () => {
-  const DATA_DIR = 'json';
+  const DATA_DIR = 'public';
   const {
     DB_USER, DB_PASS, DB_URL, DB_NAME,
   } = process.env;
