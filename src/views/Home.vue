@@ -58,7 +58,7 @@ export default {
     json: null,
   }),
   async mounted() {
-    this.json = await fetch(`./${this.room}.json`).then((data) => data.json());
+    this.json = await fetch('/.netlify/functions/get').then((data) => data.json());
 
     this.labels = this.json.map((record) => {
       const d = new Date(record.d);
