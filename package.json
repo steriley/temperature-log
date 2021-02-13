@@ -4,6 +4,7 @@
   "description": "Graph temperatures",
   "main": "index.js",
   "scripts": {
+    "build": "node ./functions/write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "proxy": {

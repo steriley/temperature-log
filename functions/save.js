@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-// const fs = require('fs');
-// const path = require('path');
 const dotenv = require('dotenv');
 const { MongoClient } = require('mongodb');
 
@@ -14,31 +12,25 @@ exports.handler = async (event) => {
     DB_USER, DB_PASS, DB_URL, DB_NAME,
   } = process.env;
   const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_URL}/${DB_NAME}?retryWrites=true&w=majority`;
-  const client = new MongoClient(uri, { useUnifiedTopology: true, useNewUrlParser: true });
+  const client = new MongoClient(uri, { useUnifiedTopology: true });
+
   const data = {
     temperature: parseFloat(temperature),
     humidity: parseFloat(humidity),
     pressure: parseFloat(pressure),
+    date: new Date(),
   };
-
-  console.info(uri);
 
   try {
     await client.connect();
 
     const database = client.db(process.env.DB_NAME);
     const collection = database.collection(room || 'boxroom');
-    const result = await collection.insertOne(data);
 
-    // fs.writeFileSync(path.join(process.cwd(), 'json', 'data.json'), JSON.stringify([data]));
-
-    console.log(
-      `${result.insertedCount} documents were inserted with the _id: ${result.insertedId}`,
-    );
+    await collection.insertOne(data);
   } catch (error) {
     console.error(error);
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 
