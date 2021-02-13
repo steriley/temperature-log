@@ -1,5 +1,6 @@
 <template>
-  <div class="home" v-if="json">
+  <div class="home" v-if="displayGraphs">
+    <p>Last Update: {{ formattedLastUpdated }}</p>
     <vue-frappe
       id="temperature"
       :labels="labels"
@@ -56,32 +57,77 @@ export default {
     },
     room: 'boxroom',
     json: null,
+    displayGraphs: false,
+    lastUpdate: null,
   }),
+
   async mounted() {
-    this.json = await fetch('/.netlify/functions/get').then((data) => data.json());
+    await this.loadData();
+    this.setGraphData();
+  },
 
-    this.labels = this.json.map((record) => {
-      const d = new Date(record.d);
-      return `${d.getDate()}-${d.getMonth() + 1} ${d.getHours()}:${d.getMinutes()}`;
-    });
+  computed: {
+    formattedLastUpdated() {
+      return new Date(this.lastUpdate);
+    },
+  },
 
-    this.temperature.datasets.push({
-      name: 'Temperature',
-      chartType: 'line',
-      values: this.json.map((x) => x.t),
-    });
+  methods: {
+    async fetchData() {
+      const NOW = +new Date();
 
-    this.humidity.datasets.push({
-      name: 'Humidity',
-      chartType: 'bar',
-      values: this.json.map((x) => x.h),
-    });
+      this.json = await fetch('/.netlify/functions/get').then((data) => data.json());
 
-    this.pressure.datasets.push({
-      name: 'Pressure',
-      chartType: 'line',
-      values: this.json.map((x) => x.p),
-    });
+      window.localStorage.setItem(`data:${this.room}`, JSON.stringify({
+        timestamp: +new Date(),
+        data: this.json,
+      }));
+
+      this.lastUpdate = NOW;
+    },
+    async loadData() {
+      const NOW = +new Date();
+      const TIME_TILL_EXPIRED_MS = 3600000; // 1 hour
+      const storedData = window.localStorage.getItem(`data:${this.room}`);
+
+      if (storedData) {
+        const { timestamp, data } = JSON.parse(storedData);
+        if (timestamp + TIME_TILL_EXPIRED_MS < NOW) {
+          await this.fetchData();
+        } else {
+          this.json = data;
+          this.lastUpdate = timestamp;
+        }
+      } else {
+        await this.fetchData();
+      }
+    },
+    setGraphData() {
+      this.labels = this.json.map((record) => {
+        const d = new Date(record.d);
+        return `${d.getDate()}-${d.getMonth() + 1} ${d.getHours()}:${d.getMinutes()}`;
+      });
+
+      this.temperature.datasets.push({
+        name: 'Temperature',
+        chartType: 'line',
+        values: this.json.map((x) => x.t),
+      });
+
+      this.humidity.datasets.push({
+        name: 'Humidity',
+        chartType: 'bar',
+        values: this.json.map((x) => x.h),
+      });
+
+      this.pressure.datasets.push({
+        name: 'Pressure',
+        chartType: 'line',
+        values: this.json.map((x) => x.p),
+      });
+
+      this.displayGraphs = true;
+    },
   },
 };
 </script>
