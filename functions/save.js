@@ -12,13 +12,14 @@ exports.handler = async (event) => {
   const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_URL}/${DB_NAME}?retryWrites=true&w=majority`;
   const client = new MongoClient(uri, { useUnifiedTopology: true });
   const {
-    temperature, humidity, pressure, room,
+    temperature, humidity, pressure, lux, room,
   } = event.queryStringParameters;
 
   const data = {
     temperature: parseFloat(temperature),
     humidity: parseFloat(humidity),
     pressure: parseFloat(pressure),
+    lux: parseFloat(lux),
     date: new Date(),
   };
 

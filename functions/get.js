@@ -26,6 +26,7 @@ exports.handler = async (event) => {
       t: document.temperature,
       h: document.humidity,
       p: document.pressure,
+      l: document.lux,
       d: document.date,
     }));
   } catch (error) {

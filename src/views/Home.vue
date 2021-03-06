@@ -9,14 +9,14 @@
       :dataSets="temperature.datasets"
       :tooltipOptions="temperature.tooltipOptions"
     />
-    <vue-frappe
+    <!-- <vue-frappe
       id="humidity"
       :labels="labels"
       title="Humidity"
       :height="300"
       :dataSets="humidity.datasets"
       :tooltipOptions="humidity.tooltipOptions"
-    />
+    /> -->
     <vue-frappe
       id="pressure"
       :labels="labels"
@@ -24,6 +24,14 @@
       :height="300"
       :dataSets="pressure.datasets"
       :tooltipOptions="pressure.tooltipOptions"
+    />
+    <vue-frappe
+      id="light"
+      :labels="labels"
+      title="Light"
+      :height="300"
+      :dataSets="light.datasets"
+      :tooltipOptions="light.tooltipOptions"
     />
   </div>
 </template>
@@ -52,7 +60,13 @@ export default {
     pressure: {
       datasets: [],
       tooltipOptions: {
-        formatTooltipY: (d) => `${d}Bar`,
+        formatTooltipY: (d) => `${d}mb`,
+      },
+    },
+    light: {
+      datasets: [],
+      tooltipOptions: {
+        formatTooltipY: (d) => `${d}lx`,
       },
     },
     room: 'boxroom',
@@ -124,6 +138,12 @@ export default {
         name: 'Pressure',
         chartType: 'line',
         values: this.json.map((x) => x.p),
+      });
+
+      this.light.datasets.push({
+        name: 'Light',
+        chartType: 'line',
+        values: this.json.map((x) => x.l),
       });
 
       this.displayGraphs = true;
