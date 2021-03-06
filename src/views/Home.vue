@@ -9,22 +9,6 @@
       :dataSets="temperature.datasets"
       :tooltipOptions="temperature.tooltipOptions"
     />
-    <!-- <vue-frappe
-      id="humidity"
-      :labels="labels"
-      title="Humidity"
-      :height="300"
-      :dataSets="humidity.datasets"
-      :tooltipOptions="humidity.tooltipOptions"
-    /> -->
-    <vue-frappe
-      id="pressure"
-      :labels="labels"
-      title="Pressure"
-      :height="300"
-      :dataSets="pressure.datasets"
-      :tooltipOptions="pressure.tooltipOptions"
-    />
     <vue-frappe
       id="light"
       :labels="labels"
@@ -32,6 +16,22 @@
       :height="300"
       :dataSets="light.datasets"
       :tooltipOptions="light.tooltipOptions"
+    />
+    <vue-frappe
+      id="humidity"
+      :labels="labels"
+      title="Humidity"
+      :height="300"
+      :dataSets="humidity.datasets"
+      :tooltipOptions="humidity.tooltipOptions"
+    />
+    <vue-frappe
+      id="pressure"
+      :labels="labels"
+      title="Pressure"
+      :height="300"
+      :dataSets="pressure.datasets"
+      :tooltipOptions="pressure.tooltipOptions"
     />
   </div>
 </template>
@@ -101,7 +101,8 @@ export default {
     },
     async loadData() {
       const NOW = +new Date();
-      const TIME_TILL_EXPIRED_MS = 3600000; // 1 hour
+      const MINUTES_TILL_EXPIRE = 15;
+      const TIME_TILL_EXPIRED_MS = MINUTES_TILL_EXPIRE * 60 * 1000;
       const storedData = window.localStorage.getItem(`data:${this.room}`);
 
       if (storedData) {
@@ -130,7 +131,7 @@ export default {
 
       this.humidity.datasets.push({
         name: 'Humidity',
-        chartType: 'bar',
+        chartType: 'line',
         values: this.json.map((x) => x.h),
       });
 
