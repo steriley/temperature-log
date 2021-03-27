@@ -8,6 +8,8 @@
       :height="300"
       :dataSets="temperature.datasets"
       :tooltipOptions="temperature.tooltipOptions"
+      :axisOptions="temperature.axisOptions"
+      :lineOptions="temperature.lineOptions"
     />
     <vue-frappe
       id="light"
@@ -16,6 +18,8 @@
       :height="300"
       :dataSets="light.datasets"
       :tooltipOptions="light.tooltipOptions"
+      :axisOptions="light.axisOptions"
+      :lineOptions="light.lineOptions"
     />
     <vue-frappe
       id="humidity"
@@ -24,6 +28,8 @@
       :height="300"
       :dataSets="humidity.datasets"
       :tooltipOptions="humidity.tooltipOptions"
+      :axisOptions="humidity.axisOptions"
+      :lineOptions="humidity.lineOptions"
     />
     <vue-frappe
       id="pressure"
@@ -32,6 +38,8 @@
       :height="300"
       :dataSets="pressure.datasets"
       :tooltipOptions="pressure.tooltipOptions"
+      :axisOptions="pressure.axisOptions"
+      :lineOptions="pressure.lineOptions"
     />
   </div>
 </template>
@@ -50,11 +58,25 @@ export default {
       tooltipOptions: {
         formatTooltipY: (d) => `${d}C`,
       },
+      axisOptions: {
+        xIsSeries: true,
+        xAxisMode: 'tick',
+      },
+      lineOptions: {
+        hideDots: 1,
+      },
     },
     humidity: {
       datasets: [],
       tooltipOptions: {
         formatTooltipY: (d) => `${d}%`,
+      },
+      axisOptions: {
+        xIsSeries: true,
+        xAxisMode: 'tick',
+      },
+      lineOptions: {
+        hideDots: 1,
       },
     },
     pressure: {
@@ -62,11 +84,25 @@ export default {
       tooltipOptions: {
         formatTooltipY: (d) => `${d}mb`,
       },
+      axisOptions: {
+        xIsSeries: true,
+        xAxisMode: 'tick',
+      },
+      lineOptions: {
+        hideDots: 1,
+      },
     },
     light: {
       datasets: [],
       tooltipOptions: {
         formatTooltipY: (d) => `${d}lx`,
+      },
+      axisOptions: {
+        xIsSeries: true,
+        xAxisMode: 'tick',
+      },
+      lineOptions: {
+        hideDots: 1,
       },
     },
     room: 'boxroom',
@@ -138,13 +174,13 @@ export default {
       this.pressure.datasets.push({
         name: 'Pressure',
         chartType: 'line',
-        values: this.json.map((x) => x.p),
+        values: this.json.map((x) => parseFloat(x.p.toFixed(0))),
       });
 
       this.light.datasets.push({
         name: 'Light',
         chartType: 'line',
-        values: this.json.map((x) => x.l),
+        values: this.json.map((x) => parseFloat(x.l.toFixed(0))),
       });
 
       this.displayGraphs = true;
